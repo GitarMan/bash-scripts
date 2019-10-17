@@ -74,6 +74,7 @@ That's it. This script does not yet accept any arguments.
 
 
 ### sasswatch Example Project Directory Structure
+```
 .  
 ├── exampledir  
 ├── js  
@@ -84,6 +85,7 @@ That's it. This script does not yet accept any arguments.
 │  ├── variables-site  
 │  └── **style.scss**  
 └── **style.css**  
+```
 
 
 ### sasswatch Dependencies
