@@ -35,10 +35,10 @@ Here is an example `ftpmirror.json` file:
 
 ### FTP Mirror Usage:
 
-`ftpmirror`
+`ftpmirror`  
 This usage automatically checks for a file called ftpmirror.json in the present working directory.
 
-`ftpmirror ftpmirror-project-name.json`
+`ftpmirror ftpmirror-project-name.json`  
 This usage specifies ftpmirror-project-name.json as the config file.
 
 ### FTP Mirror Config Notes:
@@ -51,7 +51,7 @@ This usage specifies ftpmirror-project-name.json as the config file.
 - **PASS**: ftp password
 - **DELAY**: Minimum delay in seconds between running lftp mirror (default: 15)
 - **MIRROR OPTIONS**: Only change these recommended settings if you have read lftp manual. (--reverse option is hard-coded as this script would not work without it)
--**INOTIFYWAIT OPTIONS**: --exclude {POSIX regular expression} to exclude certain files/patterns from being watched. Read the inotifywait manual for additional options. 
+- **INOTIFYWAIT OPTIONS**: --exclude {POSIX regular expression} to exclude certain files/patterns from being watched. Read the inotifywait manual for additional options. 
 
 ### FTP Mirror Dependencies
 - inotifywait
@@ -74,16 +74,16 @@ That's it. This script does not yet accept any arguments.
 
 
 ### sasswatch Example Project Directory Structure
-.
-├── exampledir
-├── js
-├── **sass**
-│  ├── elements
-│  ├── mixins
-│  ├── modules
-│  ├── variables-site
-│  └── **style.scss**
-└── **style.css**
+.  
+├── exampledir  
+├── js  
+├── **sass**  
+│  ├── elements  
+│  ├── mixins  
+│  ├── modules  
+│  ├── variables-site  
+│  └── **style.scss**  
+└── **style.css**  
 
 
 ### sasswatch Dependencies
