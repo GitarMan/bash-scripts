@@ -1,0 +1,12 @@
+{
+    "PROTOCOL":"sftp",
+    "PORT":"2222",
+    "URL":"sftp.domain.com",
+    "LOCAL_DIR":"/home/user/Documents/Project/sample_directory/",
+    "REMOTE_DIR":"/remote/path/sample_directory/",
+    "USER":"username",
+    "PASS":"password",
+    "DELAY":10,
+    "MIRROR_OPTIONS":"--continue --delete --verbose=3",
+    "INOTIFYWAIT_OPTIONS":"--exclude (secret)|(.(swp|swx)$)"
+}

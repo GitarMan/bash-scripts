@@ -1,0 +1,123 @@
+#!/bin/bash
+
+# Mirror local folder to remote folder
+
+# Looks for ./ftpmirror.json in the current local pwd
+# by default, or you can define another file like so:
+# ftpmirror ~/Documents/Project/config.json
+
+
+CONFIG_JSON=${1:-./ftpmirror.json}
+
+declare -A CONFIG=(
+	[PROTOCOL]=""
+	[PORT]=""
+	[URL]=""
+	[LOCAL_DIR]=""
+	[REMOTE_DIR]=""
+	[USER]=""
+	[PASS]=""
+	[DELAY]=""
+	[MIRROR_OPTIONS]="--continue --reverse --delete --verbose=3"
+	[INOTIFYWAIT_OPTIONS]="--exclude (secret)|(.(swp|swx)$)"
+	)
+
+
+CHECK_FOR_CONFIG() {
+
+	if [[ ! -e $CONFIG_JSON ]]; then
+		echo "Please specify a JSON configuration file (default: ftpmirror.json)"
+		echo "Here is an example of what it should look like:"
+		cat <<JSON
+{
+    "PROTOCOL":"sftp",
+    "PORT":"2222",
+    "URL":"sftp.domain.com",
+    "LOCAL_DIR":"/home/user/Documents/Project/sample_directory/",
+    "REMOTE_DIR":"/remote/path/sample_directory/",
+    "USER":"username",
+    "PASS":"password",
+    "DELAY":10,
+    "MIRROR_OPTIONS":"--continue --reverse --delete --verbose=3",
+    "INOTIFYWAIT_OPTIONS":"--exclude (secret)|(.(swp|swx)$)"
+}
+JSON
+	exit 1
+	fi
+}
+
+CHECK_FOR_CONFIG
+
+
+DEFINE_CONFIG_VARS() {
+	for i in "${!CONFIG[@]}"; do
+		VALUE=$(jq --raw-output .$i $CONFIG_JSON)
+		CONFIG[$i]=$VALUE
+		if [[ -z ${CONFIG[$i]} ]]; then
+			echo "Error: $i is not defined in config file"
+			exit 1
+		fi
+	done
+}
+DEFINE_CONFIG_VARS
+
+
+MIRROR_LOCAL_TO_REMOTE() {
+	lftp ${CONFIG[PROTOCOL]}://${CONFIG[USER]}:${CONFIG[PASS]}@${CONFIG[URL]}:${CONFIG[PORT]}<<-MIRROR
+		cd ${CONFIG[REMOTE_DIR]}
+		!echo ""
+		!echo "$(date "+%d/%m/%Y-%T")"
+		!echo "Remote Directory Before Mirror:"
+		ls
+		!echo ""
+		mirror --reverse ${CONFIG[MIRROR_OPTIONS]} \
+		${CONFIG[LOCAL_DIR]} \
+		${CONFIG[REMOTE_DIR]}
+		!echo ""
+		!echo "$(date "+%d/%m/%Y-%T")"
+		!echo "Remote Directory After Mirror:"
+		ls
+		!echo ""
+		exit
+MIRROR
+	if [ ! $? -eq 0 ]; then
+		echo "$(date "+%d/%m/%Y-%T") Cant mirror files. Make sure the credentials and server information are correct"
+		exit 1
+	fi
+}
+
+
+
+DELAY_TIMER() {
+	SECS=${1:-15}
+	echo ""
+	while [[ $SECS -gt 0 ]]; do
+		echo -ne "Waiting... $SECS\033[0K\r"
+		sleep 1
+		: $((SECS--))
+	done
+	echo ""
+}
+
+
+
+MIRROR_LOCAL_TO_REMOTE
+
+while inotifywait ${CONFIG[INOTIFYWAIT_OPTIONS]} \
+	--recursive \
+	--event modify \
+	--event attrib \
+	--event close_write \
+	--event moved_to \
+	--event moved_from \
+	--event move \
+	--event create \
+	--event delete \
+	${CONFIG[LOCAL_DIR]}; do
+		echo ""
+		MIRROR_LOCAL_TO_REMOTE
+		echo ""
+		DELAY_TIMER ${CONFIG[DELAY]}
+		echo ""
+done
+
