@@ -10,7 +10,7 @@ while inotifywait \
     --event move \
     --event create \
     --event delete \
-    --exclude '.*\.swp$' \
+    --exclude '.*\.(swp|swx)$' \
     sass; do
 
   sassc --style compact ./sass/style.scss ./style.css
