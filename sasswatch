@@ -1,16 +1,17 @@
 #!/bin/bash
 
 while inotifywait \
-	--recursive \
-	--event modify \
-	--event attrib \
-	--event close_write \
-	--event moved_to \
-	--event moved_from \
-	--event move \
-	--event create \
-	--event delete \
-	sass; do
+    --recursive \
+    --event modify \
+    --event attrib \
+    --event close_write \
+    --event moved_to \
+    --event moved_from \
+    --event move \
+    --event create \
+    --event delete \
+    --exclude '.*\.swp$' \
+    sass; do
 
   sassc --style compact ./sass/style.scss ./style.css
 done
